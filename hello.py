@@ -3,6 +3,7 @@ python-lorem
 """
 import discord
 import lorem
+from functools import partial
 
 # this is the equivalent of `discord.ext.commands`
 from core import custom as commands
@@ -14,8 +15,11 @@ class MyCog(commands.Cog):
 
     @commands.command()
     async def my_command(self, ctx: commands.Context):
-        stc = sentence(count=1, comma=(0, 5), word_range=(5, 20))
+        stc = await self.bot.loop.run_in_executor(
+            None, 
+            partial(lorem.get_sentence, count=1, comma=(0, 10), word_range=(5, 20))
+        )
         await ctx.send(f"Hello Git!\n\n{stc}")
-    
-async def setup(bot: commands.Bot, guild_id: int):
+
+async def setup(bot: commands.Bot, guild_id: int=None):
     await bot.add_cog(MyCog(guild_id))
